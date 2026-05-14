@@ -1,0 +1,46 @@
+TASK 3: MetaPretrainer Class Skeleton - Verification Evidence
+================================================================
+
+VERIFICATION RESULTS:
+✓ Syntax is valid
+✓ MetaPretrainer class is defined
+✓ @TRAINER_REGISTRY.register() decorator is present
+✓ Method check_cfg is defined
+✓ Method build_data_loader is defined
+✓ Method build_model is defined
+✓ Method parse_batch_train is defined
+✓ Method forward_backward is defined
+
+FILE LOCATION:
+trainers/meta_pretrainer.py
+
+CLASS STRUCTURE:
+- Extends TrainerX from dassl.engine
+- Registered with @TRAINER_REGISTRY.register() decorator
+- Implements all required stub methods:
+  * check_cfg() - validates META config parameters
+  * build_data_loader() - stub for episodic data loader
+  * build_model() - stub for model factory (Task 4)
+  * parse_batch_train() - stub for batch parsing (Task 6)
+  * forward_backward() - stub for MAML training loop (Task 6)
+  * maml_inner_loop() - static method stub (Task 5)
+  * use_fast_weights() - context manager stub (Task 6)
+  * load_meta_checkpoint() - static method stub (Task 7)
+
+CONFIGURATION VALIDATION:
+The check_cfg() method validates:
+- TRAINER.META.ENABLED must be True
+- TRAINER.META.N_WAY > 0
+- TRAINER.META.K_SUPPORT > 0
+- TRAINER.META.K_QUERY > 0
+- TRAINER.META.INNER_STEPS > 0
+- TRAINER.META.N_EPISODES > 0
+
+INITIALIZATION:
+The __init__() method stores meta config parameters:
+- n_way, k_support, k_query
+- inner_lr, inner_steps, n_episodes
+- second_order flag
+
+STATUS: ✓ COMPLETE
+All required components are in place and ready for Task 4 (model factory implementation).

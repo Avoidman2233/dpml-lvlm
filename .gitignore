@@ -1,0 +1,84 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+*.manifest
+*.spec
+
+# === Virtual Environment ===
+venv/
+.venv/
+env/
+.env
+*.env.local
+
+# === Jupyter ===
+.ipynb_checkpoints/
+*.ipynb
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+*.bak
+
+# === Training Outputs (large files) ===
+output/
+logs/
+*.log
+runs/
+lightning_logs/
+wandb/
+tensorboard/
+
+# === Model Checkpoints (large binary files) ===
+*.pth
+*.pt
+*.ckpt
+!clip/ViT-B-16.pt
+
+# === Cache ===
+.cache/
+*.pkl
+!Dassl.pytorch/**/*.pkl
+
+# === Dependencies (explicit) ===
+# Keep requirements.txt tracked, ignore lockfiles from tools
+skills-lock.json
+poetry.lock
+Pipfile.lock
+
+# === Agent State (generated) ===
+.agents/
+.archive/
+
+# === Data (large external datasets) ===
+DATA/
+../DATA/
+
+# === Temporary / Test ===
+tmp/
+/tmp/
+temp/
+test_output/
+
+# === Archives ===
+*.zip
+*.tar.gz
+*.rar
+!docs/*.pdf

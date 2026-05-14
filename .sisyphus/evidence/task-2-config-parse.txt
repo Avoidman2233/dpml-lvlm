@@ -1,0 +1,64 @@
+============================================================
+VERIFICATION: TRAINER.META Config Namespace
+============================================================
+
+1. Checking train.py extend_cfg()...
+   ✓ Found: cfg.TRAINER.META = CN()
+   ✓ Found: cfg.TRAINER.META.ENABLED = False
+   ✓ Found: cfg.TRAINER.META.METHOD = "CoOp_ATP"
+   ✓ Found: cfg.TRAINER.META.N_WAY = 5
+   ✓ Found: cfg.TRAINER.META.K_SUPPORT = 1
+   ✓ Found: cfg.TRAINER.META.K_QUERY = 3
+   ✓ Found: cfg.TRAINER.META.INNER_LR = 0.01
+   ✓ Found: cfg.TRAINER.META.INNER_STEPS = 5
+   ✓ Found: cfg.TRAINER.META.N_EPISODES = 100
+   ✓ Found: cfg.TRAINER.META.SECOND_ORDER = True
+   ✓ Found: cfg.TRAINER.META.CROSS_DATASET = False
+   ✓ Found: cfg.TRAINER.META.DATASETS = []
+
+2. Checking train_select_attribute.py extend_cfg()...
+   ✓ Found: cfg.TRAINER.META = CN()
+   ✓ Found: cfg.TRAINER.META.ENABLED = False
+   ✓ Found: cfg.TRAINER.META.METHOD = "CoOp_ATP"
+   ✓ Found: cfg.TRAINER.META.N_WAY = 5
+   ✓ Found: cfg.TRAINER.META.K_SUPPORT = 1
+   ✓ Found: cfg.TRAINER.META.K_QUERY = 3
+   ✓ Found: cfg.TRAINER.META.INNER_LR = 0.01
+   ✓ Found: cfg.TRAINER.META.INNER_STEPS = 5
+   ✓ Found: cfg.TRAINER.META.N_EPISODES = 100
+   ✓ Found: cfg.TRAINER.META.SECOND_ORDER = True
+   ✓ Found: cfg.TRAINER.META.CROSS_DATASET = False
+   ✓ Found: cfg.TRAINER.META.DATASETS = []
+
+3. Checking CN import in extend_cfg()...
+   ✓ CN import found in train.py
+   ✓ CN import found in train_select_attribute.py
+
+4. Checking existing TRAINER.COOP config is preserved...
+   ✓ TRAINER.COOP preserved in train.py
+   ✓ TRAINER.COOP preserved in train_select_attribute.py
+
+============================================================
+SUMMARY
+============================================================
+✓ All verifications PASSED
+
+The TRAINER.META config namespace has been successfully added to:
+  - train.py extend_cfg()
+  - train_select_attribute.py extend_cfg()
+
+All META config keys are now accessible via YACS cfg object:
+  - cfg.TRAINER.META.ENABLED
+  - cfg.TRAINER.META.METHOD
+  - cfg.TRAINER.META.N_WAY
+  - cfg.TRAINER.META.K_SUPPORT
+  - cfg.TRAINER.META.K_QUERY
+  - cfg.TRAINER.META.INNER_LR
+  - cfg.TRAINER.META.INNER_STEPS
+  - cfg.TRAINER.META.N_EPISODES
+  - cfg.TRAINER.META.SECOND_ORDER
+  - cfg.TRAINER.META.CROSS_DATASET
+  - cfg.TRAINER.META.DATASETS
+
+Command-line override example:
+  python train.py ... TRAINER.META.N_WAY 10
