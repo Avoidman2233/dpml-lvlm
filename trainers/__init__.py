@@ -1,1 +1,2 @@
 import trainers.dlmpt_trainer
+import trainers.dlmpt_cocoop_lite

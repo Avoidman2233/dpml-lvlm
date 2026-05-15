@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>DL-MPT vs CoOp_ATP</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;max-width:1500px;margin:0 auto;padding:24px;background:#f8f9fa}
+h1{text-align:center;color:#1a1a2e;margin:0 0 5px;font-size:32px}
+.subtitle{text-align:center;color:#555;margin-bottom:30px;font-size:16px}
+.section{background:white;border-radius:10px;padding:28px;margin:28px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+h2{color:#1a1a2e;border-bottom:2px solid #eee;padding-bottom:10px;margin-top:0;font-size:22px}
+.mermaid{display:flex;justify-content:center;overflow-x:auto}
+.mermaid svg{max-width:100%;height:auto !important}
+.note{background:#e8f4fd;border-left:3px solid #2196F3;padding:10px 14px;margin:10px 0;border-radius:0 4px 4px 0;font-size:14px}
+</style></head><body>
+
+<h1>DL-MPT 与 CoOp_ATP 的方法对比</h1>
+<div class="subtitle">我们的改进：在 CoOp_ATP 基础上加入了元任务泛化环作为持续正则化</div>
+
+<div class="section"><h2>结构对比</h2>
+<div class="mermaid">graph TB
+subgraph COOP["CoOp_ATP 原有架构 单环"]
+direction TB
+CA["输入 图像批次 32张"] --> CB["CLIP 视觉理解模块 固定"]
+CA2["可学习提示: 上下文向量 + 属性词"] --> CC["CLIP 语言理解模块 固定"]
+CB --> CD["计算图文匹配度"]
+CC --> CD
+CD --> CE["标准分类损失 L_CE"]
+CE --> CF["反向传播 更新提示参数"]
+end
+
+subgraph DLMPT["DL-MPT 我们的改进 双环"]
+direction TB
+DA["输入 图像批次 32张"] --> DB["CLIP 视觉理解模块 固定"]
+DA2["可学习提示: 上下文向量 + 属性词"] --> DC["CLIP 语言理解模块 固定"]
+DB --> DD["计算图文匹配度"]
+DC --> DD
+DD --> DE["标准分类损失 L_CE"]
+
+DA3["元任务采样 20类 x 3张"] --> DF["视觉理解 取平均 视觉锚点"]
+DA2 --> DG["语言理解 语义锚点"]
+DF --> DH["融合原型 = 视觉 + 语义"]
+DG --> DH
+DA4["测试图"] --> DI["视觉理解"]
+DH --> DJ["与原型比距离"]
+DI --> DJ
+DJ --> DK["元任务泛化损失 L_meta"]
+
+DE --> DL["总损失 L = L_CE + lambda x L_meta"]
+DK --> DL
+DL --> DM["反向传播 更新提示参数"]
+end
+
+subgraph DIFF["本质区别"]
+DN["CoOp_ATP: 只有一个优化目标 L_CE"]
+DO["DL-MPT: L_CE 保证分类 + L_meta 保持泛化"]
+DP["L_meta 作为持续正则化, 防止过拟合训练类"]
+end
+
+style COOP fill:#fce4ec,stroke:#c62828
+style DLMPT fill:#d4edda,stroke:#2e7d32
+style DIFF fill:#e3f2fd,stroke:#1565c0</div></div>
+
+<div class="section"><h2>训练流程对比</h2>
+<div class="mermaid">flowchart LR
+subgraph COOP_FLOW["CoOp_ATP 训练流程"]
+C1["随机初始化提示"] --> C2["标准分类训练 100轮"] --> C3["提示参数偏向训练类"]
+C3 --> C4["新类 zero-shot 泛化能力下降"]
+end
+
+subgraph DLMPT_FLOW["DL-MPT 训练流程"]
+D1["随机初始化提示"] --> D2["Warmup 5轮 仅分类"]
+D2 --> D3["Joint 15轮 分类 + 0.2 x 元任务"]
+D3 --> D4["Refine 5轮 分类 + 0.5 x 元任务"]
+D4 --> D5["提示参数同时保留分类和泛化能力"]
+end
+
+style COOP_FLOW fill:#fce4ec,stroke:#c62828
+style DLMPT_FLOW fill:#d4edda,stroke:#2e7d32</div></div>
+
+<div class="section"><h2>关键差异总结</h2>
+<table><tr><th>维度</th><th>CoOp_ATP</th><th>DL-MPT 我们的改进</th></tr>
+<tr><td>训练环路</td><td>单一环路 仅分类损失</td><td style="background:#d4edda">双环 分类 + 元任务</td></tr>
+<tr><td>元任务</td><td>无</td><td style="background:#d4edda">N-way K-shot episodic proto</td></tr>
+<tr><td>属性词使用</td><td>仅在标准分类中作为提示</td><td style="background:#d4edda">同时在分类和元任务中作为语义锚点</td></tr>
+<tr><td>可训练参数</td><td>1,024</td><td style="background:#d4edda">1,024 完全相同</td></tr>
+<tr><td>训练时间</td><td>约 12 分钟</td><td style="background:#d4edda">约 16 分钟</td></tr>
+<tr><td>新类识别准确率</td><td>66.55%</td><td style="background:#d4edda;font-weight:bold;color:#2e7d32">71.43% +4.88pp</td></tr></table></div>
+
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'})</script></body></html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>DL-MPT 方法架构图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;max-width:1500px;margin:0 auto;padding:24px;background:#f8f9fa}
+h1{text-align:center;color:#1a1a2e;margin:0 0 5px;font-size:32px}
+.subtitle{text-align:center;color:#555;margin-bottom:30px;font-size:16px}
+.section{background:white;border-radius:10px;padding:28px;margin:28px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+h2{color:#1a1a2e;border-bottom:2px solid #eee;padding-bottom:10px;margin-top:0;font-size:22px}
+.mermaid{display:flex;justify-content:center;overflow-x:auto}
+.mermaid svg{max-width:100%;height:auto !important}
+.note{background:#e8f4fd;border-left:3px solid #2196F3;padding:10px 14px;margin:10px 0;border-radius:0 4px 4px 0;font-size:14px}
+</style></head><body>
+
+<h1>DL-MPT: Dual-loop Meta Prompt Tuning</h1>
+<div class="subtitle">双环元提示调优 | 基于元任务微调与属性辅助推理的小样本学习</div>
+
+<div class="section"><h2>一、整体架构：两条训练路径并行优化</h2>
+<div class="note">标准分类训练(路径1)与元任务泛化训练(路径2)在同一次迭代中同时进行。元任务不是预训练，而是持续的正则化。</div>
+<div class="mermaid">graph TB
+subgraph S1["INPUT 输入数据"]
+A1["标准图像批次 32 张"]; A2["元任务采样 20类 x 3张"]
+end
+subgraph S2["CLIP Model 参数固定"]
+B1["视觉理解模块"]; B2["语言理解模块"]
+end
+subgraph S3["Learnable Prompt 可学习提示"]
+C1["上下文向量 1024 params"]; C2["属性词 luxury / habitat"]
+end
+subgraph S4["Path 1 基础分类环 L_base"]
+D1["图像 --> 视觉理解"] --> D2["提示词 --> 语言理解"]
+D1 --> D3["计算图文匹配度"]; D2 --> D3
+D3 --> D4["标准分类损失 L1"]
+end
+subgraph S5["Path 2 元任务泛化环 L_meta"]
+E1["参考图 3张/类 --> 视觉理解"] --> E2["按类取平均, 得视觉锚点"]
+E3["属性词 + 类名 --> 语言理解"] --> E4["得语义锚点"]
+E2 --> E5["融合原型 = 视觉锚点 + 语义锚点"]; E4 --> E5
+E6["测试图 --> 视觉理解"] --> E7["与融合原型比距离"]; E5 --> E7
+E7 --> E8["元任务泛化损失 L2"]
+end
+subgraph S6["Joint Optimization 联合优化"]
+F1["总损失 L = L1 + lambda x L2"]; F2["反向传播, 仅更新提示参数"]
+end
+A1 --> S4; A2 --> S5; B1 --> S4; B1 --> S5; B2 --> S4; B2 --> S5
+C1 --> S4; C1 --> S5; C2 --> S4; C2 --> S5; D4 --> F1; E8 --> F1; F1 --> F2
+style S1 fill:#fff8e1,stroke:#ff8f00; style S2 fill:#eee,stroke:#999
+style S3 fill:#fff3cd,stroke:#ffc107; style S4 fill:#d4edda,stroke:#2e7d32
+style S5 fill:#e3f2fd,stroke:#1565c0; style S6 fill:#fce4ec,stroke:#c62828</div></div>
+
+<div class="section"><h2>二、元任务泛化环 放大视图</h2>
+<div class="note">核心创新：仅靠 3 张参考图，如何让模型学会区分多个陌生类别。</div>
+<div class="mermaid">flowchart LR
+subgraph E["1. 构造一次元任务"]
+E1["随机抽取 20 个训练类"]; E2["每类取 3 张作参考图"]; E3["每类取 10 张作测试图"]
+end
+subgraph V["2. 构建视觉锚点"]
+V1["参考图 --> 视觉理解"]; V2["每类 3 张取平均, 20 个视觉锚点"]
+end
+subgraph T["3. 构建语义锚点 属性词增强"]
+T1["属性词 + 类名, 如 luxury BMW"]; T2["加上可学习上下文"]; T3["--> 语言理解, 20 个语义锚点"]
+end
+subgraph P["4. 融合原型"]
+P1["原型 = 视觉锚点 + 语义锚点 除以 2"]
+end
+subgraph Q["5. 测试分类"]
+Q1["测试图 --> 视觉理解"]; Q2["与 20 个原型比余弦距离"]; Q3["最近的原型 = 预测类别"]
+end
+E2 --> V1; V1 --> V2; V2 --> P1; E1 --> T1; T1 --> T2 --> T3; T3 --> P1
+P1 --> Q2; E3 --> Q1; Q1 --> Q2; Q2 --> Q3
+style V fill:#d4edda,stroke:#2e7d32; style T fill:#e3f2fd,stroke:#1565c0
+style P fill:#fff3cd,stroke:#ff8f00; style Q fill:#fce4ec,stroke:#c62828</div></div>
+
+<div class="section"><h2>三、与传统方法的本质区别</h2>
+<div class="mermaid">graph LR
+subgraph old["传统串行范式"]
+O1["元任务预训练 20轮"] --> O2["保存参数"] --> O3["标准分类训练 100轮"]
+O3 --> O4["FAIL: 预训练的泛化能力被覆盖"]
+end
+subgraph new["DL-MPT 并行范式"]
+N1["同一次迭代"] --> N2["分类损失 + 元任务损失"]
+N2 --> N3["元任务作为持续正则化"]
+N3 --> N4["OK: 两种能力同时保留"]
+end
+style old fill:#fce4ec,stroke:#c62828; style new fill:#d4edda,stroke:#2e7d32</div></div>
+
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'})</script></body></html>

@@ -13,8 +13,7 @@ TRAINER:
     COCOOP_N_CTX: 2
   COCOOP:
     N_CTX: 2
-    CSC: False
-    CLASS_TOKEN_POSITION: "end"
+    CTX_INIT: ""
     PREC: "fp16"
   ATPROMPT:
     USE_ATPROMPT: True

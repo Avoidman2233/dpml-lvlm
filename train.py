@@ -352,3 +352,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     main(args)
 
+import trainers.dlmpt_cocoop_lite
