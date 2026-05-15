@@ -55,7 +55,6 @@ tensorboard/
 # === Cache ===
 .cache/
 *.pkl
-!Dassl.pytorch/**/*.pkl
 
 # === Dependencies (explicit) ===
 # Keep requirements.txt tracked, ignore lockfiles from tools
