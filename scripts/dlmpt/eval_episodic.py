@@ -22,7 +22,7 @@ def main():
     args = parser.parse_args()
 
     # Load token embedding
-    ckpt_path = '/home/avoidman2233/.cache/clip/ViT-B-16.pt'
+    ckpt_path = os.path.expanduser('~/.cache/clip/ViT-B-16.pt')
     jit_model = torch.jit.load(ckpt_path, map_location='cpu').eval()
     sd = jit_model.state_dict()
     token_embed = torch.nn.Embedding(sd['token_embedding.weight'].shape[0], sd['token_embedding.weight'].shape[1]).cuda()
@@ -31,7 +31,8 @@ def main():
 
     # Build config
     cfg = get_cfg_default(); _t.extend_cfg(cfg)
-    cfg.DATASET.ROOT = '/home/avoidman2233/Desktop/LVLM/DATA'
+    _proj_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+    cfg.DATASET.ROOT = os.path.join(_proj_root, '..', 'DATA')
     cfg.DATASET.NUM_SHOTS = 16; cfg.DATASET.SUBSAMPLE_CLASSES = 'new'
     cfg.SEED = args.seed; cfg.TRAINER.NAME = 'CoOp_ATP'
     cfg.MODEL.BACKBONE.NAME = 'ViT-B/16'; cfg.INPUT.SIZE = (224, 224)

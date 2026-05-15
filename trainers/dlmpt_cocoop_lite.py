@@ -19,30 +19,6 @@ from dassl.data.data_manager import DatasetWrapper, build_transform
 from trainers.cocoop_atp import CoCoOp_ATP
 
 
-class LazyImageLoader:
-    def __init__(self, data_source, tfm, device, max_cached=512):
-        self.data_source = data_source; self.tfm = tfm
-        self.device = device; self.max_cached = max_cached
-        self._cache = {}; self._order = []
-
-    def __getitem__(self, indices):
-        if isinstance(indices, int): return self._get(indices)
-        if isinstance(indices, list): indices = torch.tensor(indices)
-        return torch.stack([self._get(i.item()) for i in indices])
-
-    def _get(self, idx):
-        if idx in self._cache: return self._cache[idx]
-        datum = self.data_source[idx]
-        from PIL import Image
-        img = self.tfm(Image.open(datum.impath).convert("RGB")).to(self.device)
-        if len(self._cache) >= self.max_cached:
-            del self._cache[self._order.pop(0)]
-        self._cache[idx] = img; self._order.append(idx)
-        return img
-
-    def __len__(self): return len(self.data_source)
-
-
 @TRAINER_REGISTRY.register()
 class DLMPTCoCoOpLite(CoCoOp_ATP):
     """DL-MPT for CoCoOp, with on-demand image loading."""
@@ -75,9 +51,18 @@ class DLMPTCoCoOpLite(CoCoOp_ATP):
             data_source, n_way=self.n_way, k_support=self.k_support,
             k_query=self.k_query, n_episodes=self.n_episodes)
 
-        self.image_loader = LazyImageLoader(data_source, tfm_train, self.device)
-        self.label_list = torch.tensor([d.label for d in data_source], device=self.device)
-        print(f"[Lite] {len(data_source)} images on-demand (max 512 cached)")
+        print(f"Preloading {len(data_source)} training images to GPU...")
+        loader = DataLoader(
+            DatasetWrapper(self.cfg, data_source, transform=tfm_train, is_train=True),
+            batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
+        all_imgs, all_labels = [], []
+        for batch in tqdm(loader, desc="Caching images"):
+            all_imgs.append(batch["img"])
+            all_labels.append(batch["label"])
+        self.cached_images = torch.cat(all_imgs).to(self.device)
+        self.cached_labels = torch.cat(all_labels).to(self.device)
+        mem_mb = self.cached_images.element_size() * self.cached_images.numel() // 1024 ** 2
+        print(f"Cached {len(self.cached_images)} images ({mem_mb}MB)")
 
     def run_epoch(self):
         """Override: dual-loop with CoCoOp base path + proto meta path."""
@@ -123,10 +108,10 @@ class DLMPTCoCoOpLite(CoCoOp_ATP):
         self.update_lr()
 
     def _proto_meta_loss(self, support_idxs, query_idxs):
-        support_img = self.image_loader[support_idxs]
-        support_label = self.label_list[support_idxs]
-        query_img   = self.image_loader[query_idxs]
-        query_label = self.label_list[query_idxs]
+        support_img = self.cached_images[support_idxs]
+        support_label = self.cached_labels[support_idxs]
+        query_img   = self.cached_images[query_idxs]
+        query_label = self.cached_labels[query_idxs]
 
         unique = torch.unique(support_label)
         label_map = {orig.item(): new for new, orig in enumerate(unique)}

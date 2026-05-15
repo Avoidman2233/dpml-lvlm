@@ -3,9 +3,9 @@
 # Usage: bash scripts/dlmpt/train_cocoop.sh --dataset stanford_cars --seed 1 --lambda 0.2
 set -e
 
-PY=/home/avoidman2233/miniconda3/envs/atprompt/bin/python
-DATA=/home/avoidman2233/Desktop/LVLM/DATA
-PROJ=/home/avoidman2233/Desktop/LVLM/ATPrompt
+PROJ="$(cd "$(dirname "$0")/../.." && pwd)"
+DATA="$PROJ/../DATA"
+PY=python
 
 DATASET="stanford_cars"; SEED=1; LAMBDA=0.2; OUTPUT=""; DRY_RUN=false
 

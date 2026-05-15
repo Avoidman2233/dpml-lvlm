@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
-PY=/home/avoidman2233/miniconda3/envs/atprompt/bin/python
-DATA=/home/avoidman2233/Desktop/LVLM/DATA
-PROJ=/home/avoidman2233/Desktop/LVLM/ATPrompt
+PROJ="$(cd "$(dirname "$0")/../.." && pwd)"
+DATA="$PROJ/../DATA"
+PY=python
 
 DATASET="stanford_cars"; SEED=1; CHECKPOINT=""; N_EPISODES=200; DRY_RUN=false
 
@@ -42,7 +42,7 @@ from clip import clip
 import train as _t
 
 # Load token embedding
-ckpt_path = '/home/avoidman2233/.cache/clip/ViT-B-16.pt'
+ckpt_path = os.path.expanduser('~/.cache/clip/ViT-B-16.pt')
 jit = torch.jit.load(ckpt_path, map_location='cpu').eval()
 sd = jit.state_dict()
 token_embed = torch.nn.Embedding(sd['token_embedding.weight'].shape[0], sd['token_embedding.weight'].shape[1]).cuda()
