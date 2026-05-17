@@ -176,6 +176,8 @@ def extend_cfg(cfg):
     cfg.TRAINER.DLMPT.COCOOP = False
     cfg.TRAINER.DLMPT.COCOOP_N_CTX = 4
 
+
+
     cfg.TRAINER.NAMES_TO_UPDATE = ['prompt_learner', 'linear_probe', 'film']
 
 def choose_attribute_for_atprompt(cfg):

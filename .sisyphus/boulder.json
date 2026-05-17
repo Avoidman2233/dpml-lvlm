@@ -1,12 +1,77 @@
 {
-  "active_plan": "/home/avoidman2233/Desktop/LVLM/ATPrompt/.sisyphus/plans/proto-cocoop.md",
-  "started_at": "2026-05-14T18:02:47.192Z",
+  "active_plan": "/home/avoidman2233/Desktop/LVLM/ATPrompt/.sisyphus/plans/dlmpt-adapter-b.md",
+  "started_at": "2026-05-16T21:27:51.351Z",
   "session_ids": [
-    "ses_1de42dbebffeinetPUzTWbxAsO"
+    "ses_1de42dbebffeinetPUzTWbxAsO",
+    "ses_1cd7de5a2ffeU0t3FxtESnfZkx",
+    "ses_1cd3ef37fffejH5ZvhXub3X00F",
+    "ses_1cd3ecb13ffe0tGmuNx1pU8lfc",
+    "ses_1cd3e8198ffeKRP8kR3wz9EabP",
+    "ses_1cd3e5733ffeghRfQW5e76O0gE"
   ],
   "session_origins": {
-    "ses_1de42dbebffeinetPUzTWbxAsO": "direct"
+    "ses_1de42dbebffeinetPUzTWbxAsO": "direct",
+    "ses_1cd7de5a2ffeU0t3FxtESnfZkx": "direct",
+    "ses_1cd3ef37fffejH5ZvhXub3X00F": "appended",
+    "ses_1cd3ecb13ffe0tGmuNx1pU8lfc": "appended",
+    "ses_1cd3e8198ffeKRP8kR3wz9EabP": "appended",
+    "ses_1cd3e5733ffeghRfQW5e76O0gE": "appended"
   },
-  "plan_name": "proto-cocoop",
-  "agent": "atlas"
+  "plan_name": "dlmpt-adapter-b",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "**Core: CrossAttentionAdapter 模块 + DLMPTAdapterBTrainer 类**",
+      "session_id": "ses_1cd4de9f1ffeExTf7vo64Znww1",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-16T21:36:36.508Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "**Config: configs/trainers/dlmpt-adapter-b/vit_b16.yaml**",
+      "session_id": "ses_1cd44f87affeOHaRm6XScuTUEo",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-16T21:39:58.850Z"
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "**Scripts: train.sh + eval_novel.sh + eval_episodic.sh**",
+      "session_id": "ses_1cd4417ebffewQORmUTfxqCP3d",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-16T21:41:22.391Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "**Registration: train.py + trainers/__init__.py**",
+      "session_id": "ses_1cd42d2c8ffeOnOQYAOO4Y4KqI",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-16T21:42:21.594Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "**End-to-End Verification: config dry-run + 1-epoch smoke test + git isolation audit**",
+      "session_id": "ses_1cd415a95ffedIv0qDQZIgdWXX",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-16T21:45:24.188Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**Plan Compliance Audit** — `oracle`",
+      "session_id": "ses_1cd3e5733ffeghRfQW5e76O0gE",
+      "agent": "explore",
+      "updated_at": "2026-05-16T21:47:23.821Z"
+    }
+  }
 }

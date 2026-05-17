@@ -19,6 +19,20 @@ from dassl.data.data_manager import DatasetWrapper, build_transform
 from trainers.cocoop_atp import CoCoOp_ATP
 
 
+def _cocoop_forward(model, images, labels):
+    dtype = model.dtype
+    imf = model.image_encoder(images.type(dtype))
+    imf = F.normalize(imf, dim=-1)
+    prompts = model.prompt_learner(imf)
+    logits = []
+    for pts_i, imf_i in zip(prompts, imf):
+        tf_i = model.text_encoder(pts_i, model.tokenized_prompts)
+        tf_i = F.normalize(tf_i, dim=-1)
+        logits.append(model.logit_scale.exp() * imf_i @ tf_i.t())
+    output = torch.stack(logits)
+    return output, F.cross_entropy(output, labels)
+
+
 @TRAINER_REGISTRY.register()
 class DLMPTCoCoOpLite(CoCoOp_ATP):
     """DL-MPT for CoCoOp, with on-demand image loading."""
@@ -79,18 +93,21 @@ class DLMPTCoCoOpLite(CoCoOp_ATP):
             try: support_idxs, query_idxs = next(episodic_iter)
             except StopIteration: episodic_iter = iter(self.episodic_sampler); support_idxs, query_idxs = next(episodic_iter)
 
-            # Path 1: CoCoOp base (reuse parent's forward_backward)
-            loss_summary = self.forward_backward(base_batch)
-            loss_base = sum(loss_summary.values()) if isinstance(loss_summary, dict) else loss_summary
-            acc_base = loss_summary.get("acc", 0) if isinstance(loss_summary, dict) else 0
+            # Path 1: CoCoOp base classification
+            img_base, label_base = self.parse_batch_train(base_batch)
+            if self.cfg.TRAINER.COCOOP.PREC == "amp" and self.scaler is not None:
+                with torch.cuda.amp.autocast():
+                    output_base, loss_base = _cocoop_forward(self.model, img_base, label_base)
+            else:
+                output_base, loss_base = _cocoop_forward(self.model, img_base, label_base)
+            acc_base = compute_accuracy(output_base, label_base)[0].item()
 
             # Path 2: Episodic proto
             loss_meta, acc_meta = self._proto_meta_loss(support_idxs, query_idxs)
 
             lam = self.current_lambda
-            if lam > 0:
-                (lam * loss_meta).backward()
-                self.model_backward_and_update(loss_base)
+            loss = loss_base + lam * loss_meta
+            self.model_backward_and_update(loss)
 
             if (self.batch_idx + 1) % 20 == 0 or self.batch_idx < 2:
                 eta_sec = batch_time.avg * (self.num_batches - self.batch_idx - 1) if hasattr(batch_time, 'avg') else 0
@@ -119,19 +136,34 @@ class DLMPTCoCoOpLite(CoCoOp_ATP):
         q_lab = torch.tensor([label_map[l.item()] for l in query_label],   device=self.device)
 
         dtype = self.model.dtype; n_way = len(unique)
+        pl = self.model.prompt_learner
+        tok = self.model.tokenized_prompts
 
         vf = self.model.image_encoder(support_img.type(dtype))
         vis_protos = torch.stack([F.normalize(vf[s_lab == c].mean(0), dim=-1) for c in range(n_way)])
 
-        im_features = self.model.image_encoder(support_img.type(dtype))
-        prompts = self.model.prompt_learner(im_features)
-        text_emb_list = []
+        im_feat = self.model.image_encoder(support_img.type(dtype))
+        text_embs = []
         for i in range(len(support_img)):
-            orig_label = support_label[i].item()
-            pts_i = prompts[i]  # (n_cls, n_tokens, dim), no batch dim
-            text_feat_i = self.model.text_encoder(pts_i, self.model.tokenized_prompts)
-            text_emb_list.append(F.normalize(text_feat_i, dim=-1)[orig_label])
-        text_features = torch.stack(text_emb_list)
+            cls = support_label[i].item()
+            bias = pl.meta_net(im_feat[i:i+1]).unsqueeze(1)
+            ctx_i = pl.ctx.unsqueeze(0) + bias
+
+            if pl.atp_num == 1:
+                prompt = torch.cat([
+                    pl.token_prefix[cls:cls+1], pl.ctx_att1.unsqueeze(0),
+                    pl.token_middle1[cls:cls+1], ctx_i, pl.token_suffix[cls:cls+1],
+                ], dim=1)
+            else:
+                prompt = torch.cat([
+                    pl.token_prefix[cls:cls+1], pl.ctx_att1.unsqueeze(0),
+                    pl.token_middle1[cls:cls+1], pl.ctx_att2.unsqueeze(0),
+                    pl.token_middle2[cls:cls+1], ctx_i, pl.token_suffix[cls:cls+1],
+                ], dim=1)
+            tf = self.model.text_encoder(prompt, tok[cls:cls+1])
+            text_embs.append(F.normalize(tf, dim=-1)[0])
+
+        text_features = torch.stack(text_embs)
         text_protos = torch.stack([F.normalize(text_features[s_lab == c].mean(0), dim=-1) for c in range(n_way)])
 
         prototypes = F.normalize((vis_protos + text_protos) / 2, dim=-1)
