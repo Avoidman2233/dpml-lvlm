@@ -33,6 +33,13 @@ import trainers.maple
 import trainers.maple_atp
 import trainers.zsclip
 import trainers.dlmpt_trainer
+import trainers.base_coop_atp
+import trainers.fomaml_coop_atp
+import trainers.reptile_l2_coop_atp
+import trainers.dlmpt_adaptive_coop_atp
+import trainers.dlmpt_attrsample_coop_atp
+import trainers.dlmpt_align_coop_atp
+import trainers.dlmpt_full_coop_atp
 
 def print_args(args, cfg):
     print("***************")
@@ -176,7 +183,32 @@ def extend_cfg(cfg):
     cfg.TRAINER.DLMPT.COCOOP = False
     cfg.TRAINER.DLMPT.COCOOP_N_CTX = 4
 
+    # Config for FOMAML(CoOp+ATP)
+    cfg.TRAINER.FOMAML = CN()
+    cfg.TRAINER.FOMAML.INNER_LR = 0.01
+    cfg.TRAINER.FOMAML.INNER_STEPS = 3
+    cfg.TRAINER.FOMAML.OUTER_LR = 0.002
 
+    # Config for Reptile+L2(CoOp+ATP)
+    cfg.TRAINER.REPTILE = CN()
+    cfg.TRAINER.REPTILE.INNER_LR = 0.01
+    cfg.TRAINER.REPTILE.INNER_STEPS = 3
+    cfg.TRAINER.REPTILE.EPSILON = 0.1
+    cfg.TRAINER.REPTILE.L2_REG = 0.02
+
+    # Config for DL-MPT-Adaptive(CoOp+ATP)
+    cfg.TRAINER.ADAPTIVE_DELTA = CN()
+    cfg.TRAINER.ADAPTIVE_DELTA.HIDDEN_DIM = 256
+    cfg.TRAINER.ADAPTIVE_DELTA.DELTA_WEIGHT = 0.5
+
+    # Config for DL-MPT-AttrSample(CoOp+ATP)
+    cfg.TRAINER.ATTR_SAMPLE = CN()
+    cfg.TRAINER.ATTR_SAMPLE.TAU = 0.5
+    cfg.TRAINER.ATTR_SAMPLE.HARD_RATIO = 0.5
+
+    # Config for DL-MPT-Align(CoOp+ATP)
+    cfg.TRAINER.ATTR_ALIGN = CN()
+    cfg.TRAINER.ATTR_ALIGN.LAMBDA_ATTR = 0.01
 
     cfg.TRAINER.NAMES_TO_UPDATE = ['prompt_learner', 'linear_probe', 'film']
 

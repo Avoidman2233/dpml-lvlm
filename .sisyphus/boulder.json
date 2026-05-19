@@ -1,77 +1,131 @@
 {
-  "active_plan": "/home/avoidman2233/Desktop/LVLM/ATPrompt/.sisyphus/plans/dlmpt-adapter-b.md",
-  "started_at": "2026-05-16T21:27:51.351Z",
+  "active_plan": "/home/avoidman2233/Desktop/LVLM/ATPrompt/.sisyphus/plans/coop-atp-all-variants.md",
+  "started_at": "2026-05-17T18:44:09.781Z",
   "session_ids": [
-    "ses_1de42dbebffeinetPUzTWbxAsO",
-    "ses_1cd7de5a2ffeU0t3FxtESnfZkx",
-    "ses_1cd3ef37fffejH5ZvhXub3X00F",
-    "ses_1cd3ecb13ffe0tGmuNx1pU8lfc",
-    "ses_1cd3e8198ffeKRP8kR3wz9EabP",
-    "ses_1cd3e5733ffeghRfQW5e76O0gE"
+    "ses_1c8e5f0b7ffeV6Z4uCvSgrwMvu"
   ],
   "session_origins": {
-    "ses_1de42dbebffeinetPUzTWbxAsO": "direct",
-    "ses_1cd7de5a2ffeU0t3FxtESnfZkx": "direct",
-    "ses_1cd3ef37fffejH5ZvhXub3X00F": "appended",
-    "ses_1cd3ecb13ffe0tGmuNx1pU8lfc": "appended",
-    "ses_1cd3e8198ffeKRP8kR3wz9EabP": "appended",
-    "ses_1cd3e5733ffeghRfQW5e76O0gE": "appended"
+    "ses_1c8e5f0b7ffeV6Z4uCvSgrwMvu": "direct"
   },
-  "plan_name": "dlmpt-adapter-b",
+  "plan_name": "coop-atp-all-variants",
   "agent": "atlas",
   "task_sessions": {
     "todo:1": {
       "task_key": "todo:1",
       "task_label": "1",
-      "task_title": "**Core: CrossAttentionAdapter 模块 + DLMPTAdapterBTrainer 类**",
-      "session_id": "ses_1cd4de9f1ffeExTf7vo64Znww1",
+      "task_title": "共享基类 `BaseCoOpATP`（提取公共逻辑）",
+      "session_id": "ses_1c8bd5678ffexSfmj0jpapU9rs",
       "agent": "Sisyphus-Junior",
       "category": "deep",
-      "updated_at": "2026-05-16T21:36:36.508Z"
+      "updated_at": "2026-05-17T18:55:04.973Z"
     },
     "todo:2": {
       "task_key": "todo:2",
       "task_label": "2",
-      "task_title": "**Config: configs/trainers/dlmpt-adapter-b/vit_b16.yaml**",
-      "session_id": "ses_1cd44f87affeOHaRm6XScuTUEo",
+      "task_title": "共享 episodic 工具 + extend_cfg 注册 + train.py 导入",
+      "session_id": "ses_1c8b35e05ffe0o9QVzVKSrt6qP",
       "agent": "Sisyphus-Junior",
       "category": "quick",
-      "updated_at": "2026-05-16T21:39:58.850Z"
+      "updated_at": "2026-05-17T18:58:45.140Z"
     },
     "todo:3": {
       "task_key": "todo:3",
       "task_label": "3",
-      "task_title": "**Scripts: train.sh + eval_novel.sh + eval_episodic.sh**",
-      "session_id": "ses_1cd4417ebffewQORmUTfxqCP3d",
+      "task_title": "FOMAML(CoOp+ATP) — 严格一阶 MAML 元学习",
+      "session_id": "ses_1c8b00a1affeHPkz61guQoS253",
       "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-16T21:41:22.391Z"
+      "category": "deep",
+      "updated_at": "2026-05-17T19:05:18.644Z"
     },
     "todo:4": {
       "task_key": "todo:4",
       "task_label": "4",
-      "task_title": "**Registration: train.py + trainers/__init__.py**",
-      "session_id": "ses_1cd42d2c8ffeOnOQYAOO4Y4KqI",
+      "task_title": "Reptile+L2(CoOp+ATP) — Reptile 风格元学习 + L2 正则",
+      "session_id": "ses_1c8ab47c6ffeBLDkOBk9QVJn01",
       "agent": "Sisyphus-Junior",
-      "category": "quick",
-      "updated_at": "2026-05-16T21:42:21.594Z"
+      "category": "deep",
+      "updated_at": "2026-05-17T19:11:53.743Z"
     },
     "todo:5": {
       "task_key": "todo:5",
       "task_label": "5",
-      "task_title": "**End-to-End Verification: config dry-run + 1-epoch smoke test + git isolation audit**",
-      "session_id": "ses_1cd415a95ffedIv0qDQZIgdWXX",
+      "task_title": "DL-MPT-Adaptive(CoOp+ATP) — Task-adaptive Prompt Delta",
+      "session_id": "ses_1c8a53499ffeCPxTMOIpxquOAg",
       "agent": "Sisyphus-Junior",
       "category": "deep",
-      "updated_at": "2026-05-16T21:45:24.188Z"
+      "updated_at": "2026-05-17T19:24:44.057Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "DL-MPT-AttrSample(CoOp+ATP) — Attribute-aware Episodic Sampling",
+      "session_id": "ses_1c8997ba4ffe2Zm7IRRezA4UnR",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-17T19:30:02.068Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "DL-MPT-Align(CoOp+ATP) — Attribute Alignment Loss",
+      "session_id": "ses_1c894b832ffeGZ3EY3xsb6ZpL1",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-17T19:33:26.868Z"
+    },
+    "todo:8": {
+      "task_key": "todo:8",
+      "task_label": "8",
+      "task_title": "DL-MPT-Full(CoOp+ATP) — 全组件组合",
+      "session_id": "ses_1c8912bc7ffeg4JZK2i7wjrafJ",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-17T19:42:30.706Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "Config YAML ×6（每个变体独立配置文件）",
+      "session_id": "ses_1c888efaaffe4PhqVGWZnCMZ6y",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-17T19:44:10.775Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "Scripts: FOMAML + Reptile+L2（train.sh + eval.sh）",
+      "session_id": "ses_1c887c992ffeF6sGdsWphI9QQR",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-17T19:45:47.189Z"
+    },
+    "todo:11": {
+      "task_key": "todo:11",
+      "task_label": "11",
+      "task_title": "Scripts: Adaptive + AttrSample + Align（train.sh + eval.sh）",
+      "session_id": "ses_1c8860c75ffe0LrP8R3QReZBLq",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-17T19:47:26.087Z"
+    },
+    "todo:12": {
+      "task_key": "todo:12",
+      "task_label": "12",
+      "task_title": "Scripts: DL-MPT-Full（train.sh + eval.sh）",
+      "session_id": "ses_1c884ca2effeWBj9bnkKNRqJiF",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-05-17T19:48:29.505Z"
     },
     "final-wave:f1": {
       "task_key": "final-wave:f1",
       "task_label": "F1",
-      "task_title": "**Plan Compliance Audit** — `oracle`",
-      "session_id": "ses_1cd3e5733ffeghRfQW5e76O0gE",
-      "agent": "explore",
-      "updated_at": "2026-05-16T21:47:23.821Z"
+      "task_title": "**冒烟验证 — 全部 6 变体** — `unspecified-high`",
+      "session_id": "ses_1c83515c4ffeKzJ9sMapf1GkN5",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-05-17T21:45:06.476Z"
     }
   }
 }

@@ -1,0 +1,53 @@
+TRAINER:
+  NAME: "DLMPT_Adaptive_CoOp_ATP"
+  DLMPT:
+    LAMBDA: 0.2
+    N_WAY: 20
+    K_SUPPORT: 3
+    K_QUERY: 10
+    N_EPISODES: 100
+    WARMUP_EPOCHS: 5
+    REFINE_EPOCHS: 20
+    REFINE_LAMBDA: 0.5
+  COOP:
+    N_CTX: 2
+    CSC: False
+    CLASS_TOKEN_POSITION: "end"
+    PREC: "fp16"
+  ATPROMPT:
+    USE_ATPROMPT: True
+    ATT_NUM: 3
+    N_ATT1: 8
+    N_ATT2: 8
+    N_ATT3: 8
+    ATT1_TEXT: "shape"
+    ATT2_TEXT: "color"
+    ATT3_TEXT: "texture"
+  ADAPTIVE_DELTA:
+    HIDDEN_DIM: 256
+    DELTA_WEIGHT: 0.5
+
+MODEL:
+  BACKBONE:
+    NAME: "ViT-B/16"
+
+INPUT:
+  SIZE: (224, 224)
+  INTERPOLATION: "bicubic"
+  PIXEL_MEAN: [0.48145466, 0.4578275, 0.40821073]
+  PIXEL_STD: [0.26862954, 0.26130258, 0.27577711]
+  TRANSFORMS: ["random_resized_crop", "random_flip", "normalize"]
+
+OPTIM:
+  NAME: "sgd"
+  LR: 0.002
+  MAX_EPOCH: 25
+  LR_SCHEDULER: "cosine"
+  WARMUP_EPOCH: 1
+
+DATALOADER:
+  TRAIN_X:
+    SAMPLER: "RandomSampler"
+    BATCH_SIZE: 32
+  TEST:
+    BATCH_SIZE: 100

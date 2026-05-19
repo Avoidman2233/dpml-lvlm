@@ -22,7 +22,7 @@ DS_NWAY[dtd]=10;            DS_NCTX[dtd]=4;            DS_CFG[dtd]="dtd"
 DS_NWAY[food101]=20;        DS_NCTX[food101]=2;        DS_CFG[food101]="food101"
 DS_NWAY[fgvc_aircraft]=20;  DS_NCTX[fgvc_aircraft]=2;  DS_CFG[fgvc_aircraft]="fgvc_aircraft"
 
-DATASETS=(eurosat oxford_pets oxford_flowers ucf101 dtd food101 fgvc_aircraft)
+DATASETS=(oxford_flowers)
 SEEDS=(1 2 3)
 LAMBDA=0.2
 LOG_FILE="$PROJ/output/dlmpt_cocoop/sweep.log"
